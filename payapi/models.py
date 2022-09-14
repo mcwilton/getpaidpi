@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 
+
 class Customer(models.Model):
     customer_name = models.CharField(max_length=30)
     bank_account = models.CharField(max_length=30)
@@ -18,22 +19,22 @@ class Customer(models.Model):
 class Account(models.Model):
 
     customer_name = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    card_id = models.CharField(max_length=16)
-    credit_card_id = models.CharField(max_length=20, unique=True)
+    card_id = models.IntegerField()
+    credit_card_id = models.IntegerField()
     currency = models.CharField(max_length=3)
     total_balance = models.DecimalField(max_digits=10, decimal_places=2)
     available_balance = models.DecimalField(max_digits=10, decimal_places=2)
     reserved_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return self.card_id
+        return str(self.credit_card_id)
 
 
 class Transaction(models.Model):
 
     transaction_id = models.CharField(max_length=20, unique=True)
     type = models.CharField(max_length=16)
-    credit_card_id = models.OneToOneField(Customer, on_delete=models.CASCADE, unique=True)
+    credit_card_id = models.CharField(max_length=20, unique=True)
     merchant_name = models.CharField(max_length=100)
     merchant_country = models.CharField(max_length=4)
     merchant_city = models.CharField(max_length=128, null=True, default=None)

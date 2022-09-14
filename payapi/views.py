@@ -19,50 +19,51 @@ class Scheme_API(APIView):
         # Check recieved data for consistency
         serializer = serializers.WebhookSerializer(data=request.data)
 
-        try:
-            if serializer.is_valid(raise_exception=True):
+        # try:
+        if serializer.is_valid(raise_exception=True):
 
-                # Check to make an authorisation or presentment
-                if serializer.data.get('type') == 'authorisation':
-                    response = self.authorisation(serializer.data)
-
-                else:
-                    response = self.presentment(serializer.data)
+            # Check to make an authorisation or presentment
+            if serializer.data.get('type') == 'authorisation':
+                response = self.authorisation(serializer.data)
 
             else:
-                print(serializer.errors)
-                raise KeyError
+                response = self.presentment(serializer.data)
 
-        except ObjectDoesNotExist:
-            response = Response(
-                data={
-                    'error': True,
-                    'message': 'Webhook on non-existent data',
-                    'data': serializer.errors
-                },
-                status=status.HTTP_403_FORBIDDEN
-            )
+        else:
+            print(serializer.errors)
+            raise KeyError
 
-        except KeyError:
-            response = Response(
-                data={
-                    'error': True,
-                    'message': 'Bad request data',
-                    'data': serializer.errors
-                },
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # except ObjectDoesNotExist:
+        #     response = Response(
+        #         data={
+        #             'error': True,
+        #             'message': 'Webhook on non-existent data',
+        #             'data': serializer.errors
+        #         },
+        #         status=status.HTTP_403_FORBIDDEN
+        #     )
 
-        except ValueError:
-            response = Response(
-                data={
-                    'error': True,
-                    'message': 'Not enough funds in the account'
-                },
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # except KeyError:
+        #     response = Response(
+        #         data={
+        #             'error': True,
+        #             'message': 'Bad request data',
+        #             'data': serializer.errors
+        #         },
+        #         status=status.HTTP_403_FORBIDDEN
+        #     )
+
+        # except ValueError:
+        #     response = Response(
+        #         data={
+        #             'error': True,
+        #             'message': 'Not enough funds in the account'
+        #         },
+        #         status=status.HTTP_403_FORBIDDEN
+        #     )
 
         return response
+
 
     def authorisation(self, data):
 
@@ -183,9 +184,9 @@ class Transactions_API(APIView):
 
 
                 transactions = models.Transaction.objects.filter(
-                    type='presentment',
+                    type='authorisation',
                     credit_card_id=accounts,
-                    date__range=(start_date, end_date)
+                    # date__range=(start_date, end_date)
                 )
 
                 # When transactions found process them into usable format
@@ -193,10 +194,10 @@ class Transactions_API(APIView):
                     transactions_data = {}
 
                     for i in transactions:
-                        if i.credit_card_id.credit_card_id not in transactions_data:
-                            transactions_data[i.credit_card_id.credit_card_id] = []
+                        if i.credit_card_id not in transactions_data:
+                            transactions_data[i.credit_card_id] = []
 
-                        transactions_data[i.credit_card_id.credit_card_id].append({
+                        transactions_data[i.credit_card_id].append({
                             'transaction_id': i.transaction_id,
                             'merchant_name': i.merchant_name,
                             'billing_amount': i.billing_amount,

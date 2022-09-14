@@ -6,7 +6,7 @@ class WebhookSerializer(serializers.Serializer):
     """Serializer for checking recieved data format from scheme webhook"""
 
     type = serializers.CharField(max_length=16)
-    credit_card_id = serializers.CharField(max_length=16)
+    credit_card_id = serializers.IntegerField()
     transaction_id = serializers.CharField(max_length=16)
     merchant_name = serializers.CharField(max_length=255)
     merchant_country = serializers.CharField(max_length=4)
@@ -24,8 +24,8 @@ class TransactionsSerializer(serializers.Serializer):
     """Serializer for checking format of data recieved through URL parameters"""
 
     cardholder = serializers.IntegerField()
-    start_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
-    end_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    # start_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    # end_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
 
 class BalancesSerializer(serializers.Serializer):
