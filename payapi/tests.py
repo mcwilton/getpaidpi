@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Customers, Accounts, Transactions, Transfers
+from .models import Customer, Account, Transaction, Transfer
 from django.test import RequestFactory
 from django.urls import reverse
 from model_mommy import mommy
@@ -20,7 +20,7 @@ class TestAccounts(TestCase):
         self.models = mommy.make('payapi.Accounts')
 
     def test_str(self):
-        self.assertEquals(str(self.models), self.models.card_id)
+        self.assertEquals(str(self.models), self.models.credit_card_id)
 
 
 class TestTransactions(TestCase):
