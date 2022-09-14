@@ -17,6 +17,8 @@ class Merchant(AbstractUser):
     merchant_name = models.CharField(max_length=30)
     merchant_id = models.CharField(max_length=32, default=f"GPM-{merchant_id_generated}-2022")
     email = models.EmailField(_('email address'), unique=True)
+    merchant_city = models.CharField(max_length=128, default="Dubai")
+    merchant_country = models.CharField(max_length=50, default="UAE")
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
