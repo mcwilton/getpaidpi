@@ -3,7 +3,6 @@ from django.db.models import ObjectDoesNotExist
 
 from payapi.models import Customer, Account, Transfer
 
-
 class Command(BaseCommand):
     help = 'Credit amount to an account with a currency'
 

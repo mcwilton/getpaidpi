@@ -17,6 +17,7 @@ class Command(BaseCommand):
             settled=False
         )
 
+
         if transactions:
             # calculating profit and amount to be sent to the Scheme.
             profit = {}

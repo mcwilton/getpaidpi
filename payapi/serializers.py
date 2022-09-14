@@ -24,8 +24,8 @@ class TransactionsSerializer(serializers.Serializer):
     """Serializer for checking format of data recieved through URL parameters"""
 
     cardholder = serializers.IntegerField()
-    # start_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
-    # end_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    start_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    end_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
 
 class BalancesSerializer(serializers.Serializer):

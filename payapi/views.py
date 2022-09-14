@@ -185,7 +185,7 @@ class Transactions_API(APIView):
                 transactions = models.Transaction.objects.filter(
                     type='presentment',
                     credit_card_id=accounts,
-                    # date__range=(start_date, end_date)
+                    date__range=(start_date, end_date)
                 )
 
                 # When transactions found process them into usable format
