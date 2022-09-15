@@ -13,13 +13,12 @@ from django.utils.translation import gettext_lazy as _
 all = string.ascii_uppercase + string.digits
 merchant_id_generated = "".join(random.sample(all, 8))
 
-class Merchant(AbstractUser):
+
+class User(AbstractUser):
     merchant_name = models.CharField(max_length=30)
-    merchant_id = models.CharField(max_length=32, default=f"GPM-{merchant_id_generated}-2022")
     email = models.EmailField(_('email address'), unique=True)
     merchant_city = models.CharField(max_length=128, default="Dubai")
     merchant_country = models.CharField(max_length=50, default="UAE")
-    is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
 
@@ -32,19 +31,22 @@ class Merchant(AbstractUser):
         return self.email
 
 
-@receiver(post_save, sender=User)
-def create_user_account(sender, instance, created, **kwargs):
-    if created:
-        Account.objects.create(user=instance)
-    instance.account.save()
+# @receiver(post_save, sender=User)
+# def create_profile(sender, instance, created, **kwargs):
+# 	if created:
+# 		Profile.objects.create(user=instance)
+#
+# @receiver(post_save, sender=User)
+# def save_profile(sender, instance, **kwargs):
+# 		instance.profile.save()
 
-
-class Account(models.Model):
-    merchant_name = models.ForeignKey(Merchant, on_delete=models.CASCADE)
+class Profile(models.Model):
+    # merchant_name = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    # merchant_name = models.ForeignKey(User, on_delete=models.CASCADE)
     bank_account = models.CharField(max_length=30)
-    bank_country = models.CharField(max_length=100)
-    card_id = models.IntegerField()
-    merchant_id = models.IntegerField()
+    bank_country = models.CharField(max_length=30, default="")
+    card_id = models.CharField(max_length=20, unique=True)
+    merchant_id = models.CharField(max_length=32, default=f"GPM-{merchant_id_generated}-2022")
     currency = models.CharField(max_length=3)
     total_balance = models.DecimalField(max_digits=10, decimal_places=2)
     available_balance = models.DecimalField(max_digits=10, decimal_places=2)
@@ -86,7 +88,7 @@ class Transfer(models.Model):
     transfer_type = models.CharField(max_length=3, choices=TRANSFER_TYPE_CHOICES, blank=True)
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE, to_field='transaction_id',
                                     null=True, default=None)  # Available if debit.
-    merchant_name = models.ForeignKey(Account, on_delete=models.CASCADE)
+    merchant_name = models.ForeignKey(Profile, on_delete=models.CASCADE)
     total_balance = models.DecimalField(max_digits=10, decimal_places=2)
     timestamp = models.DateTimeField(default=timezone.now)
 

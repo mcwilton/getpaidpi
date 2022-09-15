@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status, permissions
 from . import serializers, models
-from .models import  Merchant, Account, Transaction, Transfer
+from .models import User, Profile, Transaction, Transfer
 from .serializers import PaySerializer, TransactionsSerializer, BalancesSerializer
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist

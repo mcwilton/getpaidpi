@@ -1,6 +1,7 @@
 
 from django.contrib import admin
-from django.urls import path, re_path
+from django.template.defaulttags import url
+from django.urls import path, re_path, include
 from payapi import views
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -31,6 +32,14 @@ urlpatterns = [
     path('transactions/', views.Transactions_API.as_view()),
     path('balances/', views.Balances_API.as_view()),
 
+    path('auth/', include('rest_auth.urls')),
+
+    re_path(r'^rest-auth/', include('rest_auth.urls')),
+    re_path(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
+    re_path(r'^account/', include('allauth.urls')),
+
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls'))
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

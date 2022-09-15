@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from . import models
-from .models import Merchant, Account, Transaction, Transfer
+from .models import User, Profile, Transaction, Transfer
 
 # admin.site.register(Merchant)
 # admin.site.register(Account)
@@ -9,30 +9,30 @@ from .models import Merchant, Account, Transaction, Transfer
 admin.site.register(Transfer)
 
 
-@admin.register(models.Merchant)
-class MerchantAdmin(admin.ModelAdmin):
+@admin.register(models.User)
+class UserAdmin(admin.ModelAdmin):
 
-    list_display = ('merchant_name', 'merchant_id',
+    list_display = ('merchant_name',
                     'email', 'is_active')
     # list_editable = ('customer_name',)
-    list_filter = ('merchant_name', 'merchant_id',
+    list_filter = ('merchant_name',
                     'is_active')
     list_per_page = 10
 
-    search_fields = ('merchant_name', 'merchant_id', 'is_active')
+    search_fields = ('merchant_name', 'is_active')
 
 
-@admin.register(models.Account)
-class AccountAdmin(admin.ModelAdmin):
+@admin.register(models.Profile)
+class ProfileAdmin(admin.ModelAdmin):
 
-    list_display = ('merchant_name', 'merchant_id',
+    list_display = ('merchant_id',
                     'currency', 'total_balance')
     # list_editable = ('customer_name',)
-    list_filter = ('merchant_name', 'merchant_id',
+    list_filter = ( 'merchant_id',
                     'currency')
     list_per_page = 10
 
-    search_fields = ('merchant_name', 'merchant_id')
+    search_fields = ( 'merchant_id',)
 
 @admin.register(models.Transaction)
 class TransactionAdmin(admin.ModelAdmin):

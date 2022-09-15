@@ -1,5 +1,23 @@
 from rest_framework import serializers
-from .models import Merchant, Account, Transaction, Transfer
+from .models import User, Profile, Transaction, Transfer
+from django.db import transaction
+from dj_rest_auth.registration.serializers import RegisterSerializer
+
+class UserSerializer(RegisterSerializer):
+    merchant_name = serializers.CharField(max_length=200)
+    email = serializers.CharField(max_length=100)
+    merchant_city = serializers.CharField(max_length=200)
+    merchant_country = serializers.CharField(max_length=200)
+
+    @transaction.atomic
+    def save(self, request):
+        user = super().save(request)
+        user.merchant_name = self.data.get('merchant_name')
+        user.email = self.data.get('email')
+        user.merchant_city = self.data.get('merchant_city')
+        user.merchant_country = self.data.get('merchant_country')
+        user.save()
+        return user
 
 
 class PaySerializer(serializers.Serializer):
