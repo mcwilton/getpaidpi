@@ -1,23 +1,40 @@
 from rest_framework import serializers
-from .models import User, Profile, Transaction, Transfer
+from .models import MyUser
+# Profile, Transaction, Transfer
 from django.db import transaction
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from django.contrib.auth.models import User
 
-class UserSerializer(RegisterSerializer):
-    merchant_name = serializers.CharField(max_length=200)
-    email = serializers.CharField(max_length=100)
-    merchant_city = serializers.CharField(max_length=200)
-    merchant_country = serializers.CharField(max_length=200)
 
-    @transaction.atomic
-    def save(self, request):
-        user = super().save(request)
-        user.merchant_name = self.data.get('merchant_name')
-        user.email = self.data.get('email')
-        user.merchant_city = self.data.get('merchant_city')
-        user.merchant_country = self.data.get('merchant_country')
-        user.save()
-        return user
+class UserSerializer(serializers.ModelSerializer):
+
+   class Meta:
+
+       model = MyUser
+
+       fields = "__all__"
+
+#
+# class UserSerializer(serializers.Serializer):
+#     type = serializers.CharField(max_length=16)
+#     merchant_name = serializers.CharField(max_length=200)
+#     email = serializers.CharField(max_length=100)
+#     merchant_city = serializers.CharField(max_length=200)
+#     merchant_country = serializers.CharField(max_length=200)
+#     phone = serializers.CharField(max_length=30)
+#     merchant_address = serializers.CharField(max_length=255)
+#     password1 = serializers.CharField(max_length=128)
+#     password2 = serializers.CharField(max_length=128)
+
+    # @transaction.atomic
+    # def save(self, request):
+    #     user = super().save(request)
+    #     user.merchant_name = self.data.get('merchant_name')
+    #     user.email = self.data.get('email')
+    #     user.merchant_city = self.data.get('merchant_city')
+    #     user.merchant_country = self.data.get('merchant_country')
+    #     user.save()
+    #     return user
 
 
 class PaySerializer(serializers.Serializer):

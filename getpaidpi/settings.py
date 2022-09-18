@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import datetime
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,8 +25,10 @@ SECRET_KEY = "django-insecure-$x9!oo$2fb1#3^b@6$&r1ij9moo2_6@&ju+@t#u%%w*&adx3fy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+
+AUTH_USER_MODEL = 'authentication.User'
 
 # Application definition
 
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "payapi.apps.PayapiConfig",
+    "authentication.apps.AuthenticationConfig",
     "rest_framework",
     'drf_yasg',
     'rest_framework.authtoken',
@@ -45,9 +48,11 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'allauth',
     'allauth.account',
-    # 'rest_auth.registration',
     'dj_rest_auth',
     'dj_rest_auth.registration',
+    'rest_framework_simplejwt.token_blacklist',
+    'corsheaders',
+
 ]
 
 SITE_ID = 1
@@ -55,6 +60,7 @@ SITE_ID = 1
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -89,7 +95,7 @@ WSGI_APPLICATION = "getpaidpi.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "paypi3.sqlite3",
+        "NAME": BASE_DIR / "paypi5.sqlite3",
     }
 }
 
@@ -111,8 +117,6 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -135,24 +139,56 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = 'payapi.User'
+# AUTH_USER_MODEL = 'payapi.MyUser'
 
 REST_AUTH_SERIALIZERS = {
     # 'USER_DETAILS_SERIALIZER': 'payapi.serializers.UserSerializer',
-    'REGISTER_SERIALIZER': 'payapi.serializers.UserSerializer',
+    # 'REGISTER_SERIALIZER': 'payapi.serializers.UserSerializer',
+
+ }
+# 
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_UNIQUE_EMAIL = True
+# ACCOUNT_EMAIL_VERIFICATION = 'none'
+# 
+# AUTHENTICATION_BACKENDS = [
+#     # allauth specific authentication methods, such as login by e-mail
+#     'allauth.account.auth_backends.AuthenticationBackend',
+#     # Needed to login by username in Django admin, regardless of allauth
+#     'django.contrib.auth.backends.ModelBackend',
+# ]
+# 
+# ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
+
+REST_FRAMEWORK = {
+
+   'DEFAULT_PERMISSION_CLASSES': (
+
+       # 'rest_framework.permissions.IsAuthenticated',
+
+   ),
+
+   'DEFAULT_AUTHENTICATION_CLASSES': (
+       'rest_framework_simplejwt.authentication.JWTAuthentication',
+
+       # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+
+       # 'rest_framework.authentication.SessionAuthentication',
+
+       # 'rest_framework.authentication.BasicAuthentication',
+
+   ),
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'NON_FIELD_ERRORS_KEY': 'error',
 
 }
 
-
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_VERIFICATION = 'none'
-
-AUTHENTICATION_BACKENDS = [
-    # allauth specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
-    # Needed to login by username in Django admin, regardless of allauth
-    'django.contrib.auth.backends.ModelBackend',
-]
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+}

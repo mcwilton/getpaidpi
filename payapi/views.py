@@ -1,16 +1,20 @@
 from django.shortcuts import render
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework import status, permissions
+from rest_framework import status, permissions, generics
 from . import serializers, models
-from .models import User, Profile, Transaction, Transfer
-from .serializers import PaySerializer, TransactionsSerializer, BalancesSerializer
+from .models import MyUser
+# Profile, Transaction, Transfer
+from .serializers import PaySerializer, TransactionsSerializer, BalancesSerializer, UserSerializer
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 
+
+        
 
 class Pay_API(APIView):
 
@@ -68,8 +72,37 @@ class Pay_API(APIView):
         )
 
 
-class Transactions_API(APIView):
+class RegisterMerchant(APIView):
+    def ran(self, request):
+        serializer = serializers.UserSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            data = serializer.data
+            return data
 
+    def post(self, data):
+        register = models.Transaction(
+            merchant_name=data.get('merchant_name'),
+            email=data.get('email'),
+            merchant_city=data.get('merchant_city'),
+            merchant_country=data.get('merchant_country'),
+            phone=data.get('phone'),
+            merchant_address=data.get('merchant_address'),
+            transaction_currency=data.get('transaction_currency')
+        )
+
+        register.save()
+
+        return Response(
+            data={
+                'error': False,
+                'message': f'Payment successful for merchant :{data.get("merchant_name")}'
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+
+class Transactions_API(APIView):
+    # @swagger_auto_schema(operation_summary="Create a user account by signing Up")
     def get(self, request):
         serializer = serializers.TransactionsSerializer(
             data=request.query_params)
@@ -224,3 +257,7 @@ class Balances_API(APIView):
             )
 
         return response
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = MyUser.objects.all()
+    serializer_class = UserSerializer

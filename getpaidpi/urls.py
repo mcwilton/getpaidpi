@@ -23,23 +23,17 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    
+
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-    
     path("admin/", admin.site.urls),
     path('pay/', views.Pay_API.as_view()),
     path('transactions/', views.Transactions_API.as_view()),
     path('balances/', views.Balances_API.as_view()),
+    path('reg/', views.RegisterMerchant.as_view()),
+    path("t/", include("payapi.urls")),
+    path("authentication/", include("authentication.urls")),
 
-    path('auth/', include('rest_auth.urls')),
-
-    re_path(r'^rest-auth/', include('rest_auth.urls')),
-    re_path(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
-    re_path(r'^account/', include('allauth.urls')),
-
-    path('dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls'))
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
