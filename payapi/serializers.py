@@ -1,16 +1,31 @@
 from rest_framework import serializers
-from .models import Customer, Account, Transaction, Transfer
+from .models import User, Profile, Transaction, Transfer
+from django.db import transaction
+from dj_rest_auth.registration.serializers import RegisterSerializer
+
+class UserSerializer(RegisterSerializer):
+    merchant_name = serializers.CharField(max_length=200)
+    email = serializers.CharField(max_length=100)
+    merchant_city = serializers.CharField(max_length=200)
+    merchant_country = serializers.CharField(max_length=200)
+
+    @transaction.atomic
+    def save(self, request):
+        user = super().save(request)
+        user.merchant_name = self.data.get('merchant_name')
+        user.email = self.data.get('email')
+        user.merchant_city = self.data.get('merchant_city')
+        user.merchant_country = self.data.get('merchant_country')
+        user.save()
+        return user
 
 
-class WebhookSerializer(serializers.Serializer):
-    """Serializer for checking recieved data format from scheme webhook"""
+class PaySerializer(serializers.Serializer):
 
     type = serializers.CharField(max_length=16)
-    credit_card_id = serializers.IntegerField()
+    merchant_id = serializers.IntegerField()
     transaction_id = serializers.CharField(max_length=16)
     merchant_name = serializers.CharField(max_length=255)
-    merchant_country = serializers.CharField(max_length=4)
-    merchant_city = serializers.CharField(max_length=128, required=False)
     merchant_mcc = serializers.IntegerField()
     billing_amount = serializers.DecimalField(max_digits=11, decimal_places=2)
     billing_currency = serializers.CharField(max_length=3)
@@ -21,15 +36,13 @@ class WebhookSerializer(serializers.Serializer):
 
 
 class TransactionsSerializer(serializers.Serializer):
-    """Serializer for checking format of data recieved through URL parameters"""
 
-    cardholder = serializers.IntegerField()
+    merchant_id = serializers.IntegerField()
     # start_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     # end_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
 
 class BalancesSerializer(serializers.Serializer):
-    """Serializer for checking format of data recieved through URL parameters"""
 
-    cardholder = serializers.IntegerField()
+    merchant_id = serializers.IntegerField()
     type = serializers.CharField(max_length=9)

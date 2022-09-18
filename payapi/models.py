@@ -1,40 +1,65 @@
-from enum import unique
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from .managers import CustomUserManager
+import string
+import random
+from django.utils.translation import gettext_lazy as _
 
 
+all = string.ascii_uppercase + string.digits
+merchant_id_generated = "".join(random.sample(all, 8))
 
-class Customer(models.Model):
-    customer_name = models.CharField(max_length=30)
-    bank_account = models.CharField(max_length=30)
-    bank_country = models.CharField(max_length=100)
-    credit_card_id = models.IntegerField()
-    total_balance = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=3)
+
+class User(AbstractUser):
+    merchant_name = models.CharField(max_length=30)
+    email = models.EmailField(_('email address'), unique=True)
+    merchant_city = models.CharField(max_length=128, default="Dubai")
+    merchant_country = models.CharField(max_length=50, default="UAE")
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    objects = CustomUserManager()
 
     def __str__(self):
-        return self.customer_name
+        return self.email
 
 
-class Account(models.Model):
+# @receiver(post_save, sender=User)
+# def create_profile(sender, instance, created, **kwargs):
+# 	if created:
+# 		Profile.objects.create(user=instance)
+#
+# @receiver(post_save, sender=User)
+# def save_profile(sender, instance, **kwargs):
+# 		instance.profile.save()
 
-    customer_name = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    card_id = models.IntegerField()
-    credit_card_id = models.IntegerField()
+class Profile(models.Model):
+    # merchant_name = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    # merchant_name = models.ForeignKey(User, on_delete=models.CASCADE)
+    bank_account = models.CharField(max_length=30)
+    bank_country = models.CharField(max_length=30, default="")
+    card_id = models.CharField(max_length=20, unique=True)
+    merchant_id = models.CharField(max_length=32, default=f"GPM-{merchant_id_generated}-2022")
     currency = models.CharField(max_length=3)
     total_balance = models.DecimalField(max_digits=10, decimal_places=2)
     available_balance = models.DecimalField(max_digits=10, decimal_places=2)
     reserved_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return str(self.credit_card_id)
+        return self.merchant_name
 
 
 class Transaction(models.Model):
-
     transaction_id = models.CharField(max_length=20, unique=True)
     type = models.CharField(max_length=16)
-    credit_card_id = models.CharField(max_length=20, unique=True)
+    merchant_id = models.CharField(max_length=20, unique=True)
     merchant_name = models.CharField(max_length=100)
     merchant_country = models.CharField(max_length=4)
     merchant_city = models.CharField(max_length=128, null=True, default=None)
@@ -53,7 +78,6 @@ class Transaction(models.Model):
 
 
 class Transfer(models.Model):
-
     CREDIT = 'CRT'
     DEBIT = 'DBT'
     TRANSFER_TYPE_CHOICES = (
@@ -64,7 +88,7 @@ class Transfer(models.Model):
     transfer_type = models.CharField(max_length=3, choices=TRANSFER_TYPE_CHOICES, blank=True)
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE, to_field='transaction_id',
                                     null=True, default=None)  # Available if debit.
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    merchant_name = models.ForeignKey(Profile, on_delete=models.CASCADE)
     total_balance = models.DecimalField(max_digits=10, decimal_places=2)
     timestamp = models.DateTimeField(default=timezone.now)
 
