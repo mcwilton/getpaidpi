@@ -24,20 +24,19 @@ schema_view = get_schema_view(
 
 urlpatterns = [
 
-    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'^api/v1/docs/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path("admin/", admin.site.urls),
-    path("auth/", include('djoser.urls')),
-    path("auth/", include('djoser.urls.authtoken')),
+    path("api/v1/", include("accounts.urls")),
+    path("api/v1/", include("djoser.urls")),
+    path("api/v1/", include("djoser.urls.jwt")),
 
     # path('pay/', views.Pay_API.as_view()),
     # path('transactions/', views.Transactions_API.as_view()),
     # path('balances/', views.Balances_API.as_view()),
     # path('reg/', views.RegisterMerchant.as_view()),
     # path("t/", include("payapi.urls")),
-    # path("authentication/", include("authentication.urls")),
 
-    # path("auth/", include('djoser.urls.jwt')),
 
 ]
 
