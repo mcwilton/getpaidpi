@@ -1,6 +1,7 @@
 # getpaidpi
 
 GetPaidPI is an api to help you receive pyaments for you products as a merchant.
+The API is available on this link http://getpaipi.pythonanywhere.com/
 
 You are able to do the following:
 
@@ -13,5 +14,5 @@ You are able to do the following:
 7) Edit profile
 8) Verify with email and more.
 
-The API is available on this link http://getpaipi.pythonanywhere.com/
+
 
