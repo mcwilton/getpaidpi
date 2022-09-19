@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from rest_framework import status
+from rest_framework import status, views
 from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,11 +8,40 @@ from rest_framework.views import APIView
 from . import serializers, models
 from .models import Profile, Order, Product, Transaction
 from .permissions import IsOwnerProfileOrReadOnly
-from .serializers import ProfileSerializer, OrderSerializer, ProductSerializer
+from .serializers import ProfileSerializer, OrderSerializer, ProductSerializer, BalanceExposeSerializer,ProductExposeSerializer,PayExposeSerializer
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 class Pay_API(APIView):
+    serializer_class = PayExposeSerializer
+    type_param_config = openapi.Parameter(
+        'type', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    merchant_id_param_config = openapi.Parameter(
+        'merchant_id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    transaction_id_param_config = openapi.Parameter(
+        'transaction_id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    merchant_name_param_config = openapi.Parameter(
+        'merchant_name', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
 
+    merchant_mcc_param_config = openapi.Parameter(
+        'merchant_mcc', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    billing_amount_param_config = openapi.Parameter(
+        'billing_amount', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    billing_currency_param_config = openapi.Parameter(
+        'billing_currency', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    transaction_amount_param_config = openapi.Parameter(
+        'transaction_amount', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+
+    transaction_currency_param_config = openapi.Parameter(
+        'transaction_currency', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    settlement_amount_param_config = openapi.Parameter(
+        'settlement_amount', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    settlement_currency_param_config = openapi.Parameter(
+        'settlement_currency', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+
+
+    @swagger_auto_schema(manual_parameters=[type_param_config, merchant_id_param_config, transaction_id_param_config, merchant_name_param_config,merchant_mcc_param_config, billing_amount_param_config, billing_currency_param_config, transaction_amount_param_config, transaction_currency_param_config, settlement_amount_param_config, settlement_currency_param_config   ])
     def post(self, request):
         serializer = serializers.PaySerializer(data=request.data)
 
@@ -173,8 +202,14 @@ class Transactions_API(APIView):
         return response
 
 
-class Balances_API(APIView):
+class Balances_API(views.APIView):
+    serializer_class = BalanceExposeSerializer
+    merchant_id_param_config = openapi.Parameter(
+        'merchant_id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    type_param_config = openapi.Parameter(
+        'type', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
 
+    @swagger_auto_schema(manual_parameters=[merchant_id_param_config, type_param_config])
     def get(self, request):
 
         serializer = serializers.BalancesSerializer(data=request.query_params)
@@ -270,6 +305,13 @@ class ProfileDetailView(RetrieveUpdateDestroyAPIView):
 
 class OrderView(APIView):
     # permission_classes=[IsOwnerProfileOrReadOnly,IsAuthenticated]
+    # serializer_class = OrderExposeSerializer
+    # merchant_id_param_config = openapi.Parameter(
+    #     'merchant_id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    # type_param_config = openapi.Parameter(
+    #     'type', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+
+    # @swagger_auto_schema(manual_parameters=[merchant_id_param_config, type_param_config])
     def get(self, request, format=None):
         queryset = Order.objects.all()
         serializer = OrderSerializer(queryset, many=True)
@@ -295,11 +337,24 @@ class OrderDetail(APIView):
 
 class ProductView(APIView):
     # permission_classes=[IsOwnerProfileOrReadOnly,IsAuthenticated]
+    serializer_class = ProductExposeSerializer
+    product_id_param_config = openapi.Parameter(
+        'product_id', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    product_name_param_config = openapi.Parameter(
+        'product_name', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    merchant_name_param_config = openapi.Parameter(
+        'merchant_name', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    product_price_param_config = openapi.Parameter(
+        'product_price', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+
+
+    @swagger_auto_schema(manual_parameters=[product_id_param_config, product_name_param_config, merchant_name_param_config, product_price_param_config ])
     def get(self, request, format=None):
         queryset = Product.objects.all()
         serializer = ProductSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(manual_parameters=[product_id_param_config, product_name_param_config, merchant_name_param_config, product_price_param_config ])
     def post(self, request, format=None):
         serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():

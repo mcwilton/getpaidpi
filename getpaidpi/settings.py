@@ -1,14 +1,15 @@
 import datetime
+import os
 from pathlib import Path
-
+from getpaidpi.django_secret_key import key_generator
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-$x9!oo$2fb1#3^b@6$&r1ij9moo2_6@&ju+@t#u%%w*&adx3fy"
+SECRET_KEY = key_generator()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 

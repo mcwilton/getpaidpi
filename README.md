@@ -1,5 +1,17 @@
 # getpaidpi
 
-http://localhost:8000/balances/?cardholder=324324&type=%27ledger%27
+GetPaidPI is an api to help you receive pyaments for you products as a merchant.
 
-http://localhost:8000/transactions/?cardholder=324324&start_date=2018-10-21%2000:00&end_date=2022-09-14%2014:26d_date=2022-09-14%2014:26
+You are able to do the following:
+
+1) View balance
+2) View products
+3) Delete products
+4) Add products
+5) View orders
+6) Create profile
+7) Edit profile
+8) Verify with email and more.
+
+The API is available on this link http://getpaipi.pythonanywhere.com/
+
