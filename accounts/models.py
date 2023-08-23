@@ -2,15 +2,14 @@ import random
 import string
 from django.contrib.auth.models import (AbstractBaseUser, PermissionsMixin, BaseUserManager)
 from django.db import models
-
-all = string.digits #string.ascii_uppercase +
-merchant_id_generated = "".join(random.sample(all, 8))
-
 from getpaidpi import settings
+
+all_digits = string.digits  # string.ascii_uppercase +
+merchant_id_generated = "".join(random.sample(all_digits, 8))
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, username, password=None,  **extra_fields):
+    def create_user(self, email, username, password=None, **extra_fields):
         if not email:
             raise ValueError("User must have an email")
         email = self.normalize_email(email)
@@ -61,7 +60,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Profile(models.Model):
-
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     phone = models.CharField(max_length=30, default="")
     business_name = models.CharField(max_length=250, default="")

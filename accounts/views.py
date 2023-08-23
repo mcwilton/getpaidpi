@@ -8,7 +8,8 @@ from rest_framework.views import APIView
 from . import serializers, models
 from .models import Profile, Order, Product, Transaction
 from .permissions import IsOwnerProfileOrReadOnly
-from .serializers import ProfileSerializer, OrderSerializer, ProductSerializer, BalanceExposeSerializer,ProductExposeSerializer,PayExposeSerializer
+from .serializers import ProfileSerializer, OrderSerializer, ProductSerializer, BalanceExposeSerializer, \
+    ProductExposeSerializer, PayExposeSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -40,8 +41,11 @@ class Pay_API(APIView):
     settlement_currency_param_config = openapi.Parameter(
         'settlement_currency', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
 
-
-    @swagger_auto_schema(manual_parameters=[type_param_config, merchant_id_param_config, transaction_id_param_config, merchant_name_param_config,merchant_mcc_param_config, billing_amount_param_config, billing_currency_param_config, transaction_amount_param_config, transaction_currency_param_config, settlement_amount_param_config, settlement_currency_param_config   ])
+    @swagger_auto_schema(manual_parameters=[type_param_config, merchant_id_param_config, transaction_id_param_config,
+                                            merchant_name_param_config, merchant_mcc_param_config,
+                                            billing_amount_param_config, billing_currency_param_config,
+                                            transaction_amount_param_config, transaction_currency_param_config,
+                                            settlement_amount_param_config, settlement_currency_param_config])
     def post(self, request):
         serializer = serializers.PaySerializer(data=request.data)
 
@@ -93,6 +97,7 @@ class Pay_API(APIView):
             },
             status=status.HTTP_200_OK
         )
+
 
 #
 # class RegisterMerchant(APIView):
@@ -288,19 +293,19 @@ class Balances_API(views.APIView):
 
 
 class ProfileListCreateView(ListCreateAPIView):
-    queryset= Profile.objects.all()
-    serializer_class= ProfileSerializer
-    permission_classes=[IsAuthenticated]
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        user=self.request.user
+        user = self.request.user
         serializer.save(user=user)
 
 
 class ProfileDetailView(RetrieveUpdateDestroyAPIView):
-    queryset= Profile.objects.all()
-    serializer_class= ProfileSerializer
-    permission_classes=[IsOwnerProfileOrReadOnly,IsAuthenticated]
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [IsOwnerProfileOrReadOnly, IsAuthenticated]
 
 
 class OrderView(APIView):
@@ -316,6 +321,7 @@ class OrderView(APIView):
         queryset = Order.objects.all()
         serializer = OrderSerializer(queryset, many=True)
         return Response(serializer.data)
+
 
 class OrderDetail(APIView):
     def get_object(self, pk):
@@ -347,14 +353,17 @@ class ProductView(APIView):
     product_price_param_config = openapi.Parameter(
         'product_price', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
 
-
-    @swagger_auto_schema(manual_parameters=[product_id_param_config, product_name_param_config, merchant_name_param_config, product_price_param_config ])
+    @swagger_auto_schema(
+        manual_parameters=[product_id_param_config, product_name_param_config, merchant_name_param_config,
+                           product_price_param_config])
     def get(self, request, format=None):
         queryset = Product.objects.all()
         serializer = ProductSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    @swagger_auto_schema(manual_parameters=[product_id_param_config, product_name_param_config, merchant_name_param_config, product_price_param_config ])
+    @swagger_auto_schema(
+        manual_parameters=[product_id_param_config, product_name_param_config, merchant_name_param_config,
+                           product_price_param_config])
     def post(self, request, format=None):
         serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
@@ -387,6 +396,3 @@ class ProductDetail(APIView):
         product = self.get_object(pk)
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-
